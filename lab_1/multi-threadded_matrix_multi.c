@@ -24,12 +24,13 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	for(int j = 0; j < strlen(argv[1]); j++)
-		if(!isdigit(argv[1][j]))
-		{
-			printf("Invalid arguments! Please go through README.md"); // Enter only numbers!
-			return -1;
-		}
+	for(int i = 1; i < argc; i++)
+		for(int j = 0; j < strlen(argv[i]); j++)
+			if(!isdigit(argv[i][j]))
+			{
+				printf("Invalid arguments! Please go through README.md"); // Enter only numbers!
+				return -1;
+			}
 
 	// Block size and number of threads taken in from command line
 	const int num_thread = atoi(argv[1]);
