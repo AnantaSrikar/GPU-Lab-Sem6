@@ -4,6 +4,8 @@
 
 	(Ideal) Memory usage for i crore integers = 4 crore bytes = 40 MB (in RAM)
 
+	TODO: Parallelize it
+
 	Author: Srikar
 */
 
@@ -56,8 +58,33 @@ int main(int argc, char **argv)
 
 	// Function prototypes
 	int *getBigRandomArray();
+	void mergeSort(int*, int, int);
+
+	// vars to store timestamps to calculate exectuion time
+	struct timeval start, end_init, end_exec;
+
+	// Getting start time for initialisation
+	gettimeofday(&start, NULL);
 
 	int *arr = getBigRandomArray();
+
+	// End of initialisation time
+	gettimeofday(&end_init, NULL);
+
+	mergeSort(arr, 0, ARR_SIZE - 1);
+
+	// Time after executing the block matrix multiplication
+	gettimeofday(&end_exec, NULL);
+
+	// Calulating times for initialisation and execution
+	float init_time = ((end_init.tv_sec * 1000000 + end_init.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec));
+	float exec_time = ((end_exec.tv_sec * 1000000 + end_exec.tv_usec) - (end_init.tv_sec * 1000000 + end_init.tv_usec));
+
+	init_time /= 1000000;
+	exec_time /= 1000000;
+
+	printf("\nTime taken to initialise: %fs\n", init_time);
+	printf("Time taken to execute: %fs\n\n", exec_time);
 
 	return(0);
 }
@@ -74,7 +101,90 @@ int *getBigRandomArray()
 
 	// Note: Continuos memeory access is fairly faster.
 	for(int i = 0; i < ARR_SIZE; i++)
-		arr[i] = getRandNum(0, 1000);
+		arr[i] = getRandNum(0, 10000000);
 
 	return arr;
+}
+
+int *getTempArray(int size)
+{
+	return (int*)malloc(size * sizeof(int));
+}
+
+// Merge routine
+void merge(int *arr, int l, int m, int r)
+{
+	int i, j, k;
+	int n1 = m - l + 1;
+	int n2 = r - m;
+  
+	/* create temp arrays */
+	int *L = getTempArray(n1);
+	int *R = getTempArray(n2);
+
+	/* Copy data to temp arrays L[] and R[] */
+	for (i = 0; i < n1; i++)
+		L[i] = arr[l + i];
+	
+	for (j = 0; j < n2; j++)
+		R[j] = arr[m + 1 + j];
+
+	/* Merge the temp arrays back into arr[l..r]*/
+	i = 0; // Initial index of first subarray
+	j = 0; // Initial index of second subarray
+	k = l; // Initial index of merged subarray
+
+	while (i < n1 && j < n2)
+	{
+		if (L[i] <= R[j])
+		{
+			arr[k] = L[i];
+			i++;
+		}
+
+		else
+		{
+			arr[k] = R[j];
+			j++;
+		}
+		k++;
+	}
+
+	/* Copy the remaining elements of L[], if there
+	are any */
+	while (i < n1)
+	{
+		arr[k] = L[i];
+		i++;
+		k++;
+	}
+  
+	/* Copy the remaining elements of R[], if there
+	are any */
+	while (j < n2) 
+	{
+		arr[k] = R[j];
+		j++;
+		k++;
+	}
+
+	free(L);
+	free(R);
+}
+
+/* l is for left index and r is right index of the
+sub-array of arr to be sorted */
+void mergeSort(int *arr, int l, int r)
+{
+	if (l < r)
+	{
+		// Same as (l+r)/2, but avoids overflow for
+		// large l and h
+		int m = l + (r - l) / 2;
+
+		// Sort first and second halves
+		mergeSort(arr, l, m);
+		mergeSort(arr, m + 1, r);
+		merge(arr, l, m, r);
+	}
 }

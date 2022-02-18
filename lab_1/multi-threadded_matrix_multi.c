@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 	void writeToFile(FILE*, int**, int**, int**, int);
 
 	// File handling
-	FILE *outFPtr = fopen("DAALab_output1.txt", "w");
+	FILE *outFPtr = fopen("GPUmatrixoutput.txt", "w");
 	
 	// fixed size of matrices
 	const int size = 2048;
