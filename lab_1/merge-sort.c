@@ -59,6 +59,7 @@ int main(int argc, char **argv)
 	// Function prototypes
 	int *getBigRandomArray();
 	void mergeSort(int*, int, int);
+	void testSort(int*, int);
 
 	// vars to store timestamps to calculate exectuion time
 	struct timeval start, end_init, end_exec;
@@ -82,6 +83,8 @@ int main(int argc, char **argv)
 
 	init_time /= 1000000;
 	exec_time /= 1000000;
+
+	testSort(arr, ARR_SIZE);
 
 	printf("\nTime taken to initialise: %fs\n", init_time);
 	printf("Time taken to execute: %fs\n\n", exec_time);
@@ -183,8 +186,27 @@ void mergeSort(int *arr, int l, int r)
 		int m = l + (r - l) / 2;
 
 		// Sort first and second halves
-		mergeSort(arr, l, m);
-		mergeSort(arr, m + 1, r);
-		merge(arr, l, m, r);
+		#pragma omp parallel
+		{
+			mergeSort(arr, l, m);
+			mergeSort(arr, m + 1, r);
+		}
+			merge(arr, l, m, r);
+		// }
 	}
+}
+
+// Function to test if array is sorted
+void testSort(int *arr, int size)
+{
+	for(int i = 0; i < size - 1; i++)
+	{
+		if(arr[i] > arr[i + 1])
+		{
+			printf("ERROR: Array not sorted - i = %d, a[i] = %d, a[i+1] = %d\n", i, arr[i], arr[i+1]);
+			exit(-1);
+		}
+	}
+
+	printf("Test Succeeded! Array sorted successfully!\n");
 }
