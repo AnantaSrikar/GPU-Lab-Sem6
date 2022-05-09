@@ -38,13 +38,13 @@ int main(int argc, char **argv)
 
 	int max_threads = omp_get_max_threads();
 
-	if(num_thread > max_threads)
+	if(!(num_thread <= max_threads))
 	{
 		printf("This computer has only %d vCPUs, less than %d as requested. Program will now terminate.\n", max_threads, num_thread);
 		return -1;
 	}
 
-	if(!(((num_thread % 2 == 0) && (num_thread > 0) && (num_thread / 2 <= 8)) || (num_thread == 1)))
+	if(!(((num_thread % 2 == 0) && (num_thread > 0)) || (num_thread == 1)))
 	{
 		printf("Invalid number of threads requested! Please go through README.md");
 		return -1;
@@ -58,6 +58,9 @@ int main(int argc, char **argv)
 	}
 
 	// End of command line arguments
+
+	printf("Using %d/%d threads, block size = %d ...\n\n", num_thread, max_threads, block_size);
+	omp_set_num_threads(num_thread);
 
 	// vars to store timestamps to calculate exectuion time
 	struct timeval start, end_init, end_exec;
