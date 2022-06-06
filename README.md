@@ -1,2 +1,2 @@
 # GPU-Lab-Sem6
-Solutions to all the problems for GPU Programming.
+Solutions to *almost* all the problems for GPU Programming.
